@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block admin-content %}
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">执行状态 </h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th style="width: 10px">Name</th>
+                        <th style="width: 40px">Progress</th>
+                        <th style="width: 40px">Status</th>
+                    </tr>
+                    {% for i,j in task.items %}
+                        <tr>
+                            <td>{{ i }}</td>
+                            <td>{{ j }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <!-- /.box -->
+    </div>
+
+
+{% endblock %}
