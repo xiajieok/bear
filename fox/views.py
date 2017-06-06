@@ -26,8 +26,10 @@ def update_status(pk):
     sum = 0
     for i in t_status:
         sum = sum + i.status
-
-    t_avg = sum / t_count
+    try:
+        t_avg = sum / t_count
+    except:
+        t_avg = 0
     t = models.Task.objects.filter(id=pk).update(status=t_avg)
 
     # print(t_avg)
@@ -50,6 +52,8 @@ def index(request):
 
         return render(request, 'status.html')
     else:
+        #
+        host_obj = models.Host.objects.all().values()
         # 取出cron所有记录
 
         task_obj = models.Task.objects.all().values()
@@ -60,7 +64,7 @@ def index(request):
             # print(i)
             update_status(i)
             i += i
-        return render(request, 'status.html', {'task': task_obj})
+        return render(request, 'status.html', {'task': task_obj,'host':host_obj})
 
 
 def getdata():
