@@ -30,7 +30,8 @@ class Host(models.Model):
 class Task(models.Model):
     name = models.CharField(max_length=32, default='Cron')
     task = models.CharField(max_length=32)
+    status = models.FloatField(default='1')
 class HostTask(models.Model):
     host = models.ForeignKey(Host,related_name='host_task')
     task = models.ForeignKey(Task,default='1')
-    status = models.FloatField(Task,default='1')
+    status = models.FloatField(Task,default='100')

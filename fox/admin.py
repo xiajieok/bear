@@ -18,9 +18,10 @@ class HostAdmin(admin.ModelAdmin):
     ]
 class TaskAdmin(admin.ModelAdmin):
     list_display = [
-        'name','task',
+        'name','task','status'
     ]
-
+class HostTaskAdmin(admin.ModelAdmin):
+    list_display = ['id','task','host']
 admin.site.register(models.Host, HostAdmin)
 admin.site.register(models.Task,TaskAdmin)
-admin.site.register(models.HostTask)
+admin.site.register(models.HostTask,HostTaskAdmin)

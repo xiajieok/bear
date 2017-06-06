@@ -10,29 +10,59 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
 # from Earth.forms import ArticleFrom, handle_uploaded_file, CategoryFrom, AboutFrom
 from django.http import Http404
+
+
 # Create your views here.
+
+def update_status(pk):
+    '''
+    更新Task表记录
+    统计每种task的状态,取平均值
+    :return:
+    '''
+    t_count = models.HostTask.objects.filter(task_id=pk).count()
+    t_status = models.HostTask.objects.filter(task_id=pk)
+    t_list = []
+    sum = 0
+    for i in t_status:
+        sum = sum + i.status
+
+    t_avg = sum / t_count
+    t = models.Task.objects.filter(id=pk).update(status=t_avg)
+
+    # print(t_avg)
+    return True
+
+
 def index(request):
     if request.method == 'POST':
         print('这里是POST的数据:', request.POST)
+        res = request.POST
+        # 主机任务状态
+        status = res['status']
+        hostname = res['hostname']
+        ip = res['ip']
+        # print(hostname)
+        # 写入数据库HostTask
+        t_host = models.Host.objects.get(ip=ip).id
+        print(t_host)
+        t = models.HostTask.objects.filter(host_id=t_host).update(status=status)
+
+        return render(request, 'status.html')
     else:
-        #显示计划任务名称,信息,状态
-        task_name = models.Task.objects.values_list('name')
-        task_info = models.Task.objects.values_list('task')
+        # 取出cron所有记录
 
-        status_obj = models.HostTask.objects.all().values()
+        task_obj = models.Task.objects.all().values()
+        task_count = models.Task.objects.all().count()
+        # print(task_count)
+        i = 1
+        while i < task_count:
+            # print(i)
+            update_status(i)
+            i += i
+        return render(request, 'status.html', {'task': task_obj})
 
-        task_name_list = []
-        task_info_list = []
-        for i in list(task_name):
-            for j in i:
-                task_name_list.append(j)
-        for i in list(task_info):
-            for j in i:
-                task_info_list.append(j)
-        cron = dict(zip(task_name_list, task_info_list))
-        print(cron)
 
-        return render(request,'status.html',{'task':cron,'status':status_obj})
 def getdata():
     stat_obj = models.Host
     return "%s(%s);" % ('callback', json.dumps(stat_obj))

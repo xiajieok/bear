@@ -12,13 +12,17 @@
                     <tr>
                         <th style="width: 10px">Name</th>
                         <th style="width: 40px">Progress</th>
-                        <th style="width: 40px">Status</th>
+                        <th style="width: 10px">Status</th>
                     </tr>
-                    {% for i,j in task.items %}
+                    {% for i in task %}
                         <tr>
-                            <td>{{ i }}</td>
-                            <td>{{ j }}</td>
-                            <td></td>
+                            <td>{{ i.name }}</td>
+                            <td>{{ i.task }}</td>
+                            <td>
+                                <div class="progress progress-xs progress-striped active">
+                                    <div class="progress-bar progress-bar-success" style="width: {{ i.status }}%"></div>
+                                </div>
+                            </td>
                         </tr>
                     {% endfor %}
 
