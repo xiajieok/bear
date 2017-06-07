@@ -133,18 +133,18 @@
                 </div>
                 <div class="modal-body" style="margin: 10px">
                     <p>任务名称
-                        <input id="input_ip" type="text" class="form-control" placeholder="name">
+                        <input id="input_name" type="text" class="form-control" placeholder="name">
                     </p>
                     <p>任务详情
-                        <input id="input_ip" type="text" class="form-control" placeholder="task">
+                        <input id="input_task" type="text" class="form-control" placeholder="task">
                     </p>
                     <p>任务状态
-                        <input id="input_ip" type="text" class="form-control" placeholder="IP" value="100">
+                        <input id="input_status" type="text" class="form-control" placeholder="IP" value="100">
                     </p>
 
                 </div>
                 <div class="modal-footer">
-                    <button id="bt2" type="button" class="btn btn-default" style="float: left" data-dismiss="modal" onclick="Create_Host()">
+                    <button id="bt2" type="button" class="btn btn-default" style="float: left" data-dismiss="modal" onclick="Task_Add()">
                         确定
                     </button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
@@ -267,21 +267,24 @@
 {% endblock %}
 {% block admin-js %}
     <script>
-        function Plus() {
+        function Plus(){
             $("#myModal").modal();
-            var ip = $('#input_ip').val();
-            console.log(ip);
-            var group = $('#input_group').val();
-            console.log(group);
-            var template = $('#input_template').val();
-            console.log(template);
+        }
+        function Task_Add() {
+
+            var name = $('#input_name').val();
+{#            console.log(ip);#}
+            var task = $('#input_task').val();
+{#            console.log(group);#}
+            var status = $('#input_status').val();
+{#            console.log(template);#}
 
             $.ajax({
                 url: "/fox/add/",
                 type: 'POST',
-                data: {hostip: ip, hostgroupName: group, templateName: template},
+                data: {name: name, task: task, status: status},
                 success: function () {
-                    console.log('创建主机 OK')
+                    console.log('创建Task OK')
                 }
             })
         }

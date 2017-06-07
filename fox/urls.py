@@ -17,7 +17,8 @@ from django.conf.urls import url
 from fox import views as fox
 
 urlpatterns = [
-    url(r'^data/', fox.getdata()),
+    # url(r'^data/', fox.getdata()),
     url(r'^$', fox.index),
+    url(r'^add/$', fox.add),
 
 ]

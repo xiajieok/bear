@@ -36,6 +36,36 @@ def update_status(pk):
     return True
 
 
+def add(request):
+    if request.method == 'POST':
+        print('这里是POST的数据:', request.POST)
+        new_name = request.POST.get('name')
+        new_task = request.POST.get('task')
+        new_status = request.POST.get('status')
+        t = models.Task.objects.create(name=new_name, task=new_task, status=new_status)
+    else:
+        print('ok')
+    return render(request, 'status.html')
+# def pages(request):
+#     '''
+#     分页功能实现,根据SQL查询内容,设定分多少页,输出
+#     :param request:
+#     :param blog_all:
+#     :return:
+#     '''
+#     paginator = Paginator(q_all, 8)
+#     page = request.GET.get('page')
+#     try:
+#         posts = paginator.page(page)
+#     except PageNotAnInteger:
+#         # If page is not an integer, deliver first page.
+#         posts = paginator.page(1)
+#     except EmptyPage:
+#         # If page is out of range (e.g. 9999), deliver last page of results.
+#         posts = paginator.page(paginator.num_pages)
+#     return posts
+
+
 def index(request):
     if request.method == 'POST':
         print('这里是POST的数据:', request.POST)
@@ -64,9 +94,8 @@ def index(request):
             # print(i)
             update_status(i)
             i += i
-        return render(request, 'status.html', {'task': task_obj,'host':host_obj})
+        return render(request, 'status.html', {'task': task_obj, 'host': host_obj})
 
-
-def getdata():
-    stat_obj = models.Host
-    return "%s(%s);" % ('callback', json.dumps(stat_obj))
+# def getdata():
+#     stat_obj = models.Host
+#     return "%s(%s);" % ('callback', json.dumps(stat_obj))
