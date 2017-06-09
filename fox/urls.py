@@ -20,5 +20,6 @@ urlpatterns = [
     # url(r'^data/', fox.getdata()),
     url(r'^$', fox.index),
     url(r'^add/$', fox.add),
+    url(r'^update/$', fox.update),
 
 ]

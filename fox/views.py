@@ -39,31 +39,58 @@ def update_status(pk):
 def add(request):
     if request.method == 'POST':
         print('这里是POST的数据:', request.POST)
-        new_name = request.POST.get('name')
-        new_task = request.POST.get('task')
-        new_status = request.POST.get('status')
-        t = models.Task.objects.create(name=new_name, task=new_task, status=new_status)
+        type = request.POST.get('type')
+        print(type)
+        if type == 'task':
+            new_name = request.POST.get('name')
+            new_task = request.POST.get('task')
+            new_status = request.POST.get('status')
+            t = models.Task.objects.create(name=new_name, task=new_task, status=new_status)
+        else:
+            print('这是host')
     else:
         print('ok')
     return render(request, 'status.html')
-# def pages(request):
-#     '''
-#     分页功能实现,根据SQL查询内容,设定分多少页,输出
-#     :param request:
-#     :param blog_all:
-#     :return:
-#     '''
-#     paginator = Paginator(q_all, 8)
-#     page = request.GET.get('page')
-#     try:
-#         posts = paginator.page(page)
-#     except PageNotAnInteger:
-#         # If page is not an integer, deliver first page.
-#         posts = paginator.page(1)
-#     except EmptyPage:
-#         # If page is out of range (e.g. 9999), deliver last page of results.
-#         posts = paginator.page(paginator.num_pages)
-#     return posts
+
+
+def update(request):
+    if request.method == 'POST':
+        type = request.POST.get('type')
+        print(type)
+        if type == 'task':
+            id = request.POST.get('id')
+            new_name = request.POST.get('name')
+            new_task = request.POST.get('task')
+            t = models.Task.objects.filter(id=id).update(name=new_name, task=new_task)
+        else:
+            print('这是host')
+
+    else:
+        print('ok')
+    return render(request, 'status.html')
+
+
+def pages(request, q_all):
+    '''
+    分页功能实现,根据SQL查询内容,设定分多少页,输出
+    :param request:
+    :param blog_all:
+    :return:
+    '''
+    paginator = Paginator(q_all, 4)
+    page = request.GET.get('page')
+    try:
+        posts = paginator.page(page)
+        print('posts', posts)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        posts = paginator.page(1)
+        print('posts-new', posts)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        posts = paginator.page(paginator.num_pages)
+        print('posts-e', posts)
+    return posts
 
 
 def index(request):
@@ -87,6 +114,7 @@ def index(request):
         # 取出cron所有记录
 
         task_obj = models.Task.objects.all().values()
+        posts = pages(request, task_obj)
         task_count = models.Task.objects.all().count()
         # print(task_count)
         i = 1
@@ -94,7 +122,7 @@ def index(request):
             # print(i)
             update_status(i)
             i += i
-        return render(request, 'status.html', {'task': task_obj, 'host': host_obj})
+        return render(request, 'status.html', {'task': task_obj, 'host': host_obj, 'posts': posts})
 
 # def getdata():
 #     stat_obj = models.Host
