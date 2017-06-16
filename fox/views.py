@@ -3,73 +3,21 @@ from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from fox import models
-import json
+import json,datetime
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
 # from Earth.forms import ArticleFrom, handle_uploaded_file, CategoryFrom, AboutFrom
 from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+
+host_obj = models.Host.objects.all().values()
+# 取出cron所有记录
 
 
 # Create your views here.
-
-def update_status(pk):
-    '''
-    更新Task表记录
-    统计每种task的状态,取平均值
-    :return:
-    '''
-    t_count = models.HostTask.objects.filter(task_id=pk).count()
-    t_status = models.HostTask.objects.filter(task_id=pk)
-    t_list = []
-    sum = 0
-    for i in t_status:
-        sum = sum + i.status
-    try:
-        t_avg = sum / t_count
-    except:
-        t_avg = 0
-    t = models.Task.objects.filter(id=pk).update(status=t_avg)
-
-    # print(t_avg)
-    return True
-
-
-def add(request):
-    if request.method == 'POST':
-        print('这里是POST的数据:', request.POST)
-        type = request.POST.get('type')
-        print(type)
-        if type == 'task':
-            new_name = request.POST.get('name')
-            new_task = request.POST.get('task')
-            new_status = request.POST.get('status')
-            t = models.Task.objects.create(name=new_name, task=new_task, status=new_status)
-        else:
-            print('这是host')
-    else:
-        print('ok')
-    return render(request, 'status.html')
-
-
-def update(request):
-    if request.method == 'POST':
-        type = request.POST.get('type')
-        print(type)
-        if type == 'task':
-            id = request.POST.get('id')
-            new_name = request.POST.get('name')
-            new_task = request.POST.get('task')
-            t = models.Task.objects.filter(id=id).update(name=new_name, task=new_task)
-        else:
-            print('这是host')
-
-    else:
-        print('ok')
-    return render(request, 'status.html')
-
-
 def pages(request, q_all):
     '''
     分页功能实现,根据SQL查询内容,设定分多少页,输出
@@ -93,6 +41,135 @@ def pages(request, q_all):
     return posts
 
 
+
+
+
+# def add(request):
+#     if request.method == 'POST':
+#         print('这里是POST的数据:', request.POST)
+#         type = request.POST.get('type')
+#         print(type)
+#         if type == 'task':
+#             new_name = request.POST.get('name')
+#             new_task = request.POST.get('task')
+#             new_status = request.POST.get('status')
+#             print(new_name, new_task, new_status)
+#             t = models.Task.objects.create(name=new_name, task=new_task, status=new_status)
+#         else:
+#             print('这是host')
+#     else:
+#         print('ok')
+#     return render(request, 'status.html')
+
+
+
+def delete(request):
+    if request.method == 'POST':
+        print('这里是POST的数据:', request.POST)
+        type = request.POST.get('type')
+        print(type)
+        if type == 'task':
+            new_name = request.POST.get('name')
+            # print(new_name,new_task,new_status)
+            t = models.Task.objects.get(name=new_name).delete()
+        else:
+            print('这是host')
+    else:
+        print('ok')
+    task_obj = models.Task.objects.all().values()
+    posts = pages(request, task_obj)
+    return render(request, 'task_table.html',{'posts': posts})
+    # return render(request, 'status.html')
+
+
+def update(request):
+    if request.method == 'POST':
+        print('这里是更新的数据', request.POST)
+        new_name = request.POST.get('name')
+        new_task = request.POST.get('task')
+        new_status = '100'
+        print(new_name, new_task)
+
+        try:
+            models.Task.objects.get(name=new_name)
+        except ObjectDoesNotExist:
+            print('创建')
+            t = models.Task.objects.create(name=new_name, task=new_task, status=new_status)
+        else:
+            print('更新')
+            t = models.Task.objects.filter(name=new_name).update(task=new_task)
+
+
+
+    else:
+        print('ok')
+    task_obj = models.Task.objects.all().values()
+    posts = pages(request, task_obj)
+    return render(request, 'task_table.html',{'posts': posts})
+
+def host_add(request):
+    if request.method == 'POST':
+        print('这里是更新的数据', request.POST)
+        new_hostname = request.POST.get('hostname')
+        new_ip = request.POST.get('ip')
+        # new_status = request.POST.get('status')
+        new_disk = request.POST.get('disk')
+        new_mem = request.POST.get('mem_total')
+        new_time = request.POST.get('time')
+        t = models.Host.objects.create(hostname=new_hostname,ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem)
+    else:
+        print('ok')
+    return render(request, 'status.html')
+
+
+def update_host(request):
+    if request.method == 'POST':
+        print('这里是更新的数据', request.POST)
+        new_hostname = request.POST.get('hostname')
+        new_ip = request.POST.get('ip')
+        # new_status = request.POST.get('status')
+        new_disk = request.POST.get('disk')
+        new_mem = request.POST.get('mem_total')
+        new_time = request.POST.get('time')
+
+        try:
+            models.Host.objects.get(hostname=new_hostname)
+        except ObjectDoesNotExist:
+            print('创建')
+            t = models.Host.objects.create(hostname=new_hostname,ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem)
+        else:
+            print('更新')
+            t = models.Host.objects.filter(hostname=new_hostname).update(ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem)
+
+
+    else:
+        print('ok')
+    host_obj = models.Host.objects.all().values()
+    posts = pages(request, host_obj)
+    return render(request, 'host_table.html',{'posts': posts})
+
+
+def assets(request):
+    host_obj = models.Host.objects.all().values()
+    posts = pages(request, host_obj)
+    if request.method == 'POST':
+        if request.POST.get('type') == 'detail':
+            hostneme = request.POST.get('hostname')
+            print(hostneme)
+            t = models.Host.objects.filter(hostname=hostneme)
+            print(type(list(t.values())))
+            for i in list(t.values()):
+                t = (JsonResponse(i))
+
+            return HttpResponse(t)
+        else:
+            return render(request, 'host.html',{'posts': posts,'host':host_obj})
+    else:
+        return render(request, 'host.html',{'posts': posts,'host':host_obj})
+def tasks(request):
+    task_obj = models.Task.objects.all().values()
+    posts = pages(request, task_obj)
+    return render(request, 'task.html', {'task': task_obj, 'posts': posts})
 def index(request):
     if request.method == 'POST':
         print('这里是POST的数据:', request.POST)
@@ -110,18 +187,15 @@ def index(request):
         return render(request, 'status.html')
     else:
         #
-        host_obj = models.Host.objects.all().values()
-        # 取出cron所有记录
-
-        task_obj = models.Task.objects.all().values()
-        posts = pages(request, task_obj)
-        task_count = models.Task.objects.all().count()
         # print(task_count)
         i = 1
-        while i < task_count:
-            # print(i)
-            update_status(i)
-            i += i
+        # while i < task_count:
+        #     # print(i)
+        #     # update_status(i)
+        #     i += i
+        task_obj = models.Task.objects.all().values()
+        host_obj = models.Host.objects.all().values()
+        posts = pages(request, task_obj)
         return render(request, 'status.html', {'task': task_obj, 'host': host_obj, 'posts': posts})
 
 # def getdata():

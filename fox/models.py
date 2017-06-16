@@ -9,6 +9,7 @@ class Host(models.Model):
     '''
     主机名、ip、系统版本、内存、硬盘、制造商、cpu、厂商、生产商,SN
     '''
+    id = models.IntegerField(primary_key=True)
     hostname = models.CharField(max_length=50)
     ip = models.GenericIPAddressField()
     # os = models.CharField(max_length=50)
@@ -28,7 +29,7 @@ class Host(models.Model):
 
 
 class Task(models.Model):
-    name = models.CharField(max_length=32, default='Cron')
+    name = models.CharField(primary_key=True,max_length=32, default='Cron')
     task = models.CharField(max_length=32)
     status = models.FloatField(default='1')
 class HostTask(models.Model):

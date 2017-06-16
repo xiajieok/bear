@@ -29,9 +29,12 @@ def http_post():
     data = {
         'hostname':hostname,
         'ip':'192.168.1.110',
-        'status':10,
+        # 'status':10,
+        'mem_total':8,
+        'time':'2017-06-14 06:00',
+        'disk':512
     }
-    url = 'http://192.168.1.110:8000'
+    url = 'http://192.168.1.110:8000/fox/add/'
     data = parse.urlencode(data).encode('utf-8')
     req = request.Request(url,data=data)
     res = request.urlopen(req)

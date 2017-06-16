@@ -1,0 +1,126 @@
+{% extends 'index.html' %}
+{% load custom %}
+{{% block admin-content %}
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">计划任务</h3>
+
+                <!-- /.box-header -->
+                <div class="box-body">
+                {% include 'task_table.html' %}
+                </div>
+
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+            <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h3 class="modal-title" id="myModalLabel">编辑记录</h3>
+                        </div>
+                        <div class="modal-body" style="margin: 10px">
+                            <p>任务名称
+                                <input id="input_name" type="text" class="form-control" placeholder="name">
+                            </p>
+                            <p>任务详情
+                                <input id="input_task" type="text" class="form-control" placeholder="task">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="bt1" type="submit" class="btn btn-default" style="float: left"
+                                    data-dismiss="modal"
+                                    value="1" onclick="Update(this)">
+                                确定
+                            </button>
+                            <button id="bt1" type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="nav-divider">
+                <span class="glyphicon glyphicon-plus" style="margin-left: 10px"
+                      id="checkbox1" onclick="Modal()"></span>
+            <nav style="float: right">
+                <ul class="pagination">
+                    {% if posts.has_previous %}
+                        <li class="">
+                            <a href="?page={{ posts.previous_page_number }}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% for page_num in posts.paginator.page_range %}
+                        {% guess_page posts.number page_num %}
+                    {% endfor %}
+                    {% if posts.has_next %}
+                        <li class="">
+                            <a href="?page={{ posts.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block admin-js %}
+    <script>
+        function Modal(obj) {
+            $("#modal-edit").modal();
+            var name = $(obj).parent().parent().parent().find('td').eq(2).html();
+            $('#input_name').val(name);
+            console.log(name);
+            var task = $(obj).parent().parent().parent().find('td').eq(3).html();
+            $('#input_task').val(task);
+        }
+
+        function Update(obj) {
+            var new_name = $('#input_name').val();
+            console.log(new_name);
+            var new_task = $('#input_task').val();
+            console.log(new_task);
+            $('#tb').html("");
+
+            $.ajax({
+                url: "/fox/update/",
+                type: 'POST',
+                data: {type: 'task', name: new_name, task: new_task},
+                success: function (data) {
+                    console.log('创建Task OK')
+                    console.log(data);
+                    $("#tb").html(data);
+                }
+            })
+        }
+
+        function Delete(obj) {
+            var name = $(obj).parent().parent().parent().find('td').eq(2).html();
+            $('#input_name').val(name);
+            console.log(name);
+            console.log('准备删除的数据', name);
+            $('tb').html("");
+            $.ajax({
+                url: "/fox/del/",
+                type: 'POST',
+                data: {type: 'task', name: name},
+                success: function (data) {
+                    console.log('删除Task OK');
+                    $("#tb").html(data);
+                }
+            })
+        }
+
+
+    </script>
+{% endblock %}

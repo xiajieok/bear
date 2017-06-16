@@ -1,0 +1,165 @@
+{% extends 'index.html' %}
+{% load custom %}
+{% block admin-content %}
+
+    <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h3 class="modal-title" id="myModalLabel">主机详情</h3>
+                </div>
+                <div class="modal-body detail" style="margin: 10px">
+                    <p>
+                        <a>
+                            主机名:
+                        </a>
+                        <a id="host"></a>
+                    </p>
+                    <hr>
+                    <p>
+                        <a>
+                            IP:
+                        </a>
+                        <a id="ip"></a>
+                    </p>
+                    <hr>
+                    <p>
+                        <a>
+                            内存:
+                        </a>
+                        <a id="mem"></a>
+                    </p>
+                    <hr>
+                    <p>
+                        <a>
+                            磁盘:
+                        </a>
+                        <a id="disk"></a>
+                    </p>
+                    <hr>
+                    <p>
+                        <a>
+                            机房:
+                        </a>
+                        <a id="city">青岛</a>
+                    </p>
+                    <hr>
+                    <p>
+                        <a>
+                            更新时间:
+                        </a>
+                        <a id="time"></a>
+                    </p>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">主机列表</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div id="example2_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                    <div class="row">
+                        <div class="col-sm-6"></div>
+                        <div class="col-sm-6"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table id="example2" class="table table-bordered table-hover dataTable" role="grid"
+                                   aria-describedby="example2_info">
+                                <thead>
+                                <tr role="row">
+                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
+                                        colspan="1"
+                                        aria-label="Browser: activate to sort column ascending">HostName
+                                    </th>
+                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
+                                        colspan="1"
+                                        aria-label="Platform(s): activate to sort column ascending">IP
+                                    </th>
+                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
+                                        colspan="1"
+                                        aria-label="Engine version: activate to sort column ascending">Memory
+                                    </th>
+                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
+                                        colspan="1"
+                                        aria-label="CSS grade: activate to sort column ascending">Disk
+                                    </th>
+                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
+                                        colspan="1"
+                                        aria-label="CSS grade: activate to sort column ascending">City
+                                    </th>
+                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
+                                        colspan="1"
+                                        aria-label="CSS grade: activate to sort column ascending">Last Modify
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for i in host %}
+                                    <tr role="row" class="even">
+
+                                        <td class="sorting_1" style="display:none">{{ i.id }}</td>
+                                        <td id="{{ i.id }}" onclick="Detail(this)">{{ i.hostname }}</td>
+                                        <td>{{ i.ip }}</td>
+                                        <td>{{ i.mem_total }}</td>
+                                        <td>{{ i.disk }}</td>
+                                        <td>北京</td>
+                                        <td>{{ i.time |date:"Y-m-d H:i:s" }}</td>
+
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+
+    </div>
+{% endblock %}
+{% block admin-js %}
+    <script>
+        function Detail(obj) {
+            var hostname = $(obj).text();
+            console.log(hostname);
+
+            $.ajax({
+                url: "/fox/assets/",
+                type: 'POST',
+                data: {type: 'detail', hostname: hostname},
+                success: function (data) {
+                    $("#modal-edit").modal();
+                    var obj = eval('(' + data + ')');
+                    $('#host').text(obj.hostname);
+                    $('#ip').text(obj.ip);
+                    $('#mem').text(obj.mem_total);
+                    $('#disk').text(obj.disk);
+                    $('#city').text(obj.city);
+                    $('#time').text(obj.time);
+
+
+                }
+            })
+        }
+    </script>
+{% endblock %}
+
+

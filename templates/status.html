@@ -1,126 +1,69 @@
 {% extends 'index.html' %}
 {% load custom %}
 {% block admin-content %}
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">计划任务</h3>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="fa fa-users"></i></span>
 
-                <!-- /.box-header -->
-                <div class="box-body">
-                    <div id="example2_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
-                        <div class="row">
-                            <div class="col-sm-6"></div>
-                            <div class="col-sm-6"></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <table id="example2" class="table table-bordered table-hover dataTable" role="grid"
-                                       aria-describedby="example2_info">
-                                    <thead>
-                                    <tr role="row">
-                                        <th class="sorting_asc" tabindex="0" aria-controls="example2" rowspan="1"
-                                            colspan="1" aria-sort="ascending"
-                                            aria-label="Rendering engine: activate to sort column descending">
-                                            <span class="glyphicon glyphicon-unchecked"
-                                                  id="checkbox1"></span>
-                                        </th>
-                                        <th class="sorting_asc" tabindex="0" aria-controls="example2" rowspan="1"
-                                            colspan="1" aria-sort="ascending"
-                                            aria-label="Rendering engine: activate to sort column descending">ID
-                                        </th>
-                                        <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
-                                            colspan="1"
-                                            aria-label="Browser: activate to sort column ascending">Name
-                                        </th>
-                                        <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
-                                            colspan="1"
-                                            aria-label="Platform(s): activate to sort column ascending">Task
-                                        </th>
-                                        <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
-                                            width="80px"
-                                            colspan="1"
-                                            aria-label="Platform(s): activate to sort column ascending">操作
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-
-                                    {% for i in posts %}
-                                        <tr>
-                                            <td><span class="glyphicon glyphicon-unchecked"
-                                                      id="checkbox1"></span></td>
-                                            <td id="{{ i.id }}">{{ i.id }}</td>
-                                            <td>{{ i.name }}</td>
-                                            <td>{{ i.task }}</td>
-                                            <td>
-                                                <div class="nav-divider">
-
-                                                    <span class="glyphicon glyphicon-edit"
-                                                          id="myclick" onclick="Edit(this)"></span>
-                                                    <span class="glyphicon glyphicon-trash" style="margin-left: 10px"
-                                                          id="checkbox1"
-                                                          onclick="Edit(this);"></span>
-                                                </div>
-
-
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-
-                                    </tbody>
-                                    <tfoot>
-
-                                    </tfoot>
-                                </table>
-                                <div class="nav-divider">
-                                        <span class="glyphicon glyphicon-unchecked" style="margin-left: 10px"
-                                              id="checkbox1" onclick="Edit(this);"></span>
-                                        <span class="glyphicon glyphicon-plus" style="margin-left: 10px"
-                                              id="checkbox1" onclick="Plus(this);"></span>
-                                        <span class="glyphicon glyphicon-trash" style="margin-left: 10px"
-                                              id="checkbox1"
-                                              onclick="Edit(this);"></span>
-                                    <nav style="float: right">
-                                        <ul class="pagination">
-                                            {% if posts.has_previous %}
-                                                <li class="">
-                                                    <a href="?page={{ posts.previous_page_number }}"
-                                                       aria-label="Previous">
-                                                        <span aria-hidden="true">&laquo;</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                            {% for page_num in posts.paginator.page_range %}
-                                                {% guess_page posts.number page_num %}
-                                            {% endfor %}
-                                            {% if posts.has_next %}
-                                                <li class="">
-                                                    <a href="?page={{ posts.next_page_number }}" aria-label="Next">
-                                                        <span aria-hidden="true">&raquo;</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                        </ul>
-                                    </nav>
-
-                                </div>
-                                <div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
+                    <div class="info-box-content">
+                        <span class="info-box-text">用户总数</span>
+                    <span class="info-box-number">2
+                        <small>th</small></span>
                     </div>
+                    <!-- /.info-box-content -->
                 </div>
 
-                <!-- /.box-body -->
+                <!-- /.info-box -->
             </div>
-            <!-- /.box -->
+            <!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-red"><i class="fa  fa-cubes"></i></span>
 
+                    <div class="info-box-content">
+                        <span class="info-box-text">主机总数</span>
+                        <span class="info-box-number">{{ host | length }}</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+
+            <!-- fix for small devices only -->
+            <div class="clearfix visible-sm-block"></div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-safari"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Event</span>
+                        <span class="info-box-number">{{ event | length }}</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-yellow"><i class="fa fa-chrome"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">New Members</span>
+                        <span class="info-box-number">2,000</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
         </div>
     </div>
+
     <div class="col-md-6">
         <div class="box">
             <div class="box-header with-border">
@@ -162,184 +105,18 @@
         </div>
         <!-- /.box -->
     </div>
-    <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h3 class="modal-title" id="myModalLabel">编辑记录</h3>
-                </div>
-                <div class="modal-body" style="margin: 10px">
-                    <p>任务名称
-                        <input id="input_name" type="text" class="form-control" placeholder="name">
-                    </p>
-                    <p>任务详情
-                        <input id="input_task" type="text" class="form-control" placeholder="task">
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button id="bt1" type="submit" class="btn btn-default" style="float: left" data-dismiss="modal"
-                            value="1">
-                        确定
-                    </button>
-                    <button id="bt1" type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">主机列表</h3>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-                <div id="example2_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
-                    <div class="row">
-                        <div class="col-sm-6"></div>
-                        <div class="col-sm-6"></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table id="example2" class="table table-bordered table-hover dataTable" role="grid"
-                                   aria-describedby="example2_info">
-                                <thead>
-                                <tr role="row">
-                                    <th class="sorting_asc" tabindex="0" aria-controls="example2" rowspan="1"
-                                        colspan="1" aria-sort="ascending"
-                                        aria-label="Rendering engine: activate to sort column descending">ID
-                                    </th>
-                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
-                                        colspan="1"
-                                        aria-label="Browser: activate to sort column ascending">HostName
-                                    </th>
-                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
-                                        colspan="1"
-                                        aria-label="Platform(s): activate to sort column ascending">IP
-                                    </th>
-                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
-                                        colspan="1"
-                                        aria-label="Engine version: activate to sort column ascending">Memory
-                                    </th>
-                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
-                                        colspan="1"
-                                        aria-label="CSS grade: activate to sort column ascending">Disk
-                                    </th>
-                                    <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
-                                        colspan="1"
-                                        aria-label="CSS grade: activate to sort column ascending">City
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                {% for i in host %}
-                                    <tr role="row" class="even">
-
-                                        <td class="sorting_1">{{ i.id }}</td>
-                                        <td>{{ i.hostname }}</td>
-                                        <td>{{ i.ip }}</td>
-                                        <td>{{ i.mem_total }}</td>
-                                        <td>{{ i.disk }}</td>
-                                        <td>北京</td>
-
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                                <tfoot>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-
-                    {#                    <div class="row">#}
-                    {#                        <div class="col-sm-5">#}
-                    {#                            <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">Showing#}
-                    {#                                1#}
-                    {#                                to 10 of 57 entries#}
-                    {#                            </div>#}
-                    {#                        </div>#}
-                    {#                        <div class="col-sm-7">#}
-                    {#                            <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">#}
-                    {#                                <ul class="pagination">#}
-                    {#                                    <li class="paginate_button previous disabled" id="example2_previous"><a href="#"#}
-                    {#                                                                                                            aria-controls="example2"#}
-                    {#                                                                                                            data-dt-idx="0"#}
-                    {#                                                                                                            tabindex="0">Previous</a>#}
-                    {#                                    </li>#}
-                    {#                                    <li class="paginate_button active"><a href="#" aria-controls="example2"#}
-                    {#                                                                          data-dt-idx="1" tabindex="0">1</a></li>#}
-                    {#                                    <li class="paginate_button "><a href="#" aria-controls="example2"#}
-                    {#                                                                    data-dt-idx="2"#}
-                    {#                                                                    tabindex="0">2</a></li>#}
-                    {#                                    <li class="paginate_button "><a href="#" aria-controls="example2"#}
-                    {#                                                                    data-dt-idx="3"#}
-                    {#                                                                    tabindex="0">3</a></li>#}
-                    {#                                    <li class="paginate_button "><a href="#" aria-controls="example2"#}
-                    {#                                                                    data-dt-idx="4"#}
-                    {#                                                                    tabindex="0">4</a></li>#}
-                    {#                                    <li class="paginate_button "><a href="#" aria-controls="example2"#}
-                    {#                                                                    data-dt-idx="5"#}
-                    {#                                                                    tabindex="0">5</a></li>#}
-                    {#                                    <li class="paginate_button "><a href="#" aria-controls="example2"#}
-                    {#                                                                    data-dt-idx="6"#}
-                    {#                                                                    tabindex="0">6</a></li>#}
-                    {#                                    <li class="paginate_button next" id="example2_next"><a href="#"#}
-                    {#                                                                                           aria-controls="example2"#}
-                    {#                                                                                           data-dt-idx="7"#}
-                    {#                                                                                           tabindex="0">Next</a>#}
-                    {#                                    </li>#}
-                    {#                                </ul>#}
-                    {#                            </div>#}
-                    {#                        </div>#}
-                    {#                    </div>#}
-                </div>
-            </div>
-            <!-- /.box-body -->
-        </div>
-        <!-- /.box -->
-
-    </div>
-{% endblock %}
-{% block admin-js %}
-    <script>
-
-        function Plus() {
-            $("#modal-edit").modal();
-            var new_name = $('#input_name').val();
-            console.log(new_name);
-            var new_task = $('#input_task').val();
-            console.log(new_task);
-            var status = $('#input_status').val();
-
-            $.ajax({
-                url: "/fox/add/",
-                type: 'POST',
-                data: {type: 'task', name: new_name, task: new_task, status: '100'},
-                success: function () {
-                    console.log('创建Task OK')
-                }
-            })
-        }
-        function Edit(obj) {
-            $("#modal-edit").modal();
-            var name = $(obj).parent().parent().parent().find('td').eq(1).html();
-            $('#input_name').val(name);
-            var task = $(obj).parent().parent().parent().find('td').eq(2).html();
-            $('#input_task').val(task);
-
-
-            $.ajax({
-                url: "/fox/update/",
-                type: 'POST',
-                data: {type: 'task', name: name, task: task},
-                success: function () {
-                    console.log('更新Task OK')
-                }
-            })
-        }
-
-
-    </script>
+{#    <div class="col-md-12">#}
+{#        <div class="box">#}
+{#            <div class="box-header">#}
+{#                <h3 class="box-title">主机列表</h3>#}
+{#            </div>#}
+{#            <!-- /.box-header -->#}
+{#            <div class="box-body">#}
+{#                {% include 'host_table.html' %}#}
+{#            </div>#}
+{#            <!-- /.box-body -->#}
+{#        </div>#}
+{#        <!-- /.box -->#}
+{##}
+{#    </div>#}
 {% endblock %}

@@ -19,7 +19,12 @@ from fox import views as fox
 urlpatterns = [
     # url(r'^data/', fox.getdata()),
     url(r'^$', fox.index),
-    url(r'^add/$', fox.add),
+    url(r'^add/$', fox.host_add),
+    url(r'^assets/$', fox.assets),
+    url(r'^tasks/$', fox.tasks),
+    url(r'^del/$', fox.delete),
+    # url(r'^inquery/$', fox.inquery),
     url(r'^update/$', fox.update),
+    url(r'^update_host/$', fox.update_host),
 
 ]

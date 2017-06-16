@@ -1,0 +1,9 @@
+.detail p {
+    text-align: left;
+}
+
+.detail p a {
+    display: inline-block;
+    width: 200px;
+    color: black;
+}
