@@ -20,12 +20,27 @@
                     <hr>
                     <p>
                         <a>
-                            IP:
+                            型号:
                         </a>
-                        <a id="ip"></a>
+                        <a id="product"></a>
                     </p>
                     <hr>
                     <p>
+                        <a>
+                            SN:
+                        </a>
+                        <a id="sn"></a>
+                    </p>
+                    <hr>
+
+                    <p>
+                        <a>
+                            CPU型号:
+                        </a>
+                        <a id="cpu_version"></a>
+                    </p>
+                    <hr>
+                     <p>
                         <a>
                             内存:
                         </a>
@@ -154,6 +169,9 @@
                     $('#disk').text(obj.disk);
                     $('#city').text(obj.city);
                     $('#time').text(obj.time);
+                    $('#sn').text(obj.sn);
+                    $('#product').text(obj.product);
+                    $('#cpu_version').text(obj.cpu_version);
 
 
                 }

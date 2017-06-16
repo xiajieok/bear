@@ -130,16 +130,19 @@ def update_host(request):
         # new_status = request.POST.get('status')
         new_disk = request.POST.get('disk')
         new_mem = request.POST.get('mem_total')
+        new_cpu_version = request.POST.get('cpu_version')
         new_time = request.POST.get('time')
+        new_sn = request.POST.get('sn')
+        new_product = request.POST.get('product')
 
         try:
             models.Host.objects.get(hostname=new_hostname)
         except ObjectDoesNotExist:
             print('创建')
-            t = models.Host.objects.create(hostname=new_hostname,ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem)
+            t = models.Host.objects.create(hostname=new_hostname,ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem,sn=new_sn,product=new_product,cpu_version=new_cpu_version)
         else:
             print('更新')
-            t = models.Host.objects.filter(hostname=new_hostname).update(ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem)
+            t = models.Host.objects.filter(hostname=new_hostname).update(ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem,sn=new_sn,product=new_product,cpu_version=new_cpu_version)
 
 
     else:
