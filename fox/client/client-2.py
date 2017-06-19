@@ -1,10 +1,7 @@
 #!/bin/env/python
 # -*- coding: utf-8 -*-
-import os, time, json,subprocess
-from urllib.request import Request
-import urllib
-from urllib import request, parse
-from urllib.error import HTTPError
+import os, time, json
+import urllib,urllib2
 
 
 # 判断备份文件是否存在
@@ -22,6 +19,7 @@ def file_status():
     else:
         print('Not OK !')
         return 0
+
 class CPU():
     @staticmethod
     def version():
@@ -36,6 +34,7 @@ class CPU():
         if cpu_physical == '' :
             return None
         return cpu_physical
+
     @staticmethod
     def cores():
         cpu_cores = os.popen("cat /proc/cpuinfo| grep 'cpu cores'| uniq|awk '{print $4}'").read()
@@ -60,48 +59,35 @@ def serial_number():
 def product():
     pro = os.popen("dmidecode -t 1 |awk 'NR==7'|awk '{print $3,$4}'").read()
     return pro
-def disk():
-    cmd = """/sbin/fdisk -l 2>>/dev/null|egrep "Disk|Platte"|egrep -v 'identifier|mapper|Disklabel'"""
-    disk_data = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    partition_size = []
-    for dev in disk_data.stdout.readlines():
-        try:
-            dev = dev.decode()
-            size = int(dev.strip().split(', ')[1].split()[0]) / 1024 / 1024 / 1024
-        except Exception as e:
-            print(e.args)
-            pass
-        else:
-            partition_size.append(str(size))
-    return " + ".join(partition_size)
 def http_post():
     date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     hostname = os.popen('hostname').read()
-    ip = os.popen("ifconfig eth0|grep 'inet addr:'|awk -F ':' 'NR==1{print $2}'|awk '{print $1}'").read()
+    ip = os.popen("ifconfig |grep 'inet addr:'|awk -F ':' 'NR==1{print $2}'|awk '{print $1}'").read()
     mem = os.popen("cat /proc/meminfo |awk 'NR==1{print $2}'").read()
     mem_total = round(int(mem) /(1024 * 1024))
-    #disk = os.statvfs("/")
-    #hd = {}
-    #hd['available'] = round(disk.f_bsize * disk.f_bavail / (1024 * 1024 * 1024))
-    #hd['capacity'] = round(disk.f_bsize * disk.f_blocks / (1024 * 1024 * 1024))
-    #hd['used'] = round(disk.f_bsize * disk.f_bfree / (1024 * 1024 * 1024))
+    disk = os.statvfs("/")
+    hd = {}
+    hd['available'] = round(disk.f_bsize * disk.f_bavail / (1024 * 1024 * 1024))
+    hd['capacity'] = round(disk.f_bsize * disk.f_blocks / (1024 * 1024 * 1024))
+    hd['used'] = round(disk.f_bsize * disk.f_bfree / (1024 * 1024 * 1024))
     s = file_status()
     sn = serial_number()
+    print(sn)
     data = {
         'hostname': hostname,
         'ip': ip,
         # 'status':10,
         'mem_total': mem_total,
         'time': date,
-        'disk': disk(),
+        'disk': hd['available'],
         'product':product(),
         'sn': sn,
         'cpu_version':CPU.version()
     }
     url = 'http://192.168.1.110:8000/fox/update_host/'
-    data = parse.urlencode(data).encode('utf-8')
-    req = request.Request(url, data=data)
-    res = request.urlopen(req)
+    data = urllib.urlencode(data).encode('utf-8')
+    req = urllib2.Request(url, data=data)
+    res = urllib2.urlopen(req)
     print(res)
 
     return 'ok'
