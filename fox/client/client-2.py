@@ -1,7 +1,7 @@
 #!/bin/env/python
 # -*- coding: utf-8 -*-
 import os, time, json
-import urllib,urllib2
+import urllib,urllib2,commands
 
 
 # 判断备份文件是否存在
@@ -59,6 +59,22 @@ def serial_number():
 def product():
     pro = os.popen("dmidecode -t 1 |awk 'NR==7'|awk '{print $3,$4}'").read()
     return pro
+list_d = []
+def disk():
+    free = commands.getstatusoutput('df -Ph|grep dev|egrep -v "tmp|var|shm"')
+    d = free[1].split('\n')
+
+    for i in d:
+        i = i.split()
+        key = ['dir', 'all', 'used', 'space', 'used%', 'mount']
+        list_v = []
+
+        for v in i:
+            list_v.append(v)
+        tmp = dict(zip(key, list_v))
+        list_d.append(tmp)
+    new = json.dumps(list_d)
+    return new
 def http_post():
     date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     hostname = os.popen('hostname').read()
@@ -66,10 +82,10 @@ def http_post():
     mem = os.popen("cat /proc/meminfo |awk 'NR==1{print $2}'").read()
     mem_total = round(int(mem) /(1024 * 1024))
     disk = os.statvfs("/")
-    hd = {}
-    hd['available'] = round(disk.f_bsize * disk.f_bavail / (1024 * 1024 * 1024))
-    hd['capacity'] = round(disk.f_bsize * disk.f_blocks / (1024 * 1024 * 1024))
-    hd['used'] = round(disk.f_bsize * disk.f_bfree / (1024 * 1024 * 1024))
+    # hd = {}
+    # hd['available'] = round(disk.f_bsize * disk.f_bavail / (1024 * 1024 * 1024))
+    # hd['capacity'] = round(disk.f_bsize * disk.f_blocks / (1024 * 1024 * 1024))
+    # hd['used'] = round(disk.f_bsize * disk.f_bfree / (1024 * 1024 * 1024))
     s = file_status()
     sn = serial_number()
     print(sn)
@@ -79,7 +95,8 @@ def http_post():
         # 'status':10,
         'mem_total': mem_total,
         'time': date,
-        'disk': hd['available'],
+        'disk': disk(),
+        # 'disk': hd['available'],
         'product':product(),
         'sn': sn,
         'cpu_version':CPU.version()

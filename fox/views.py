@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from fox import models
-import json,datetime
+import json, datetime
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -14,6 +14,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 
 host_obj = models.Host.objects.all().values()
+
+
 # 取出cron所有记录
 
 
@@ -29,19 +31,13 @@ def pages(request, q_all):
     page = request.GET.get('page')
     try:
         posts = paginator.page(page)
-        print('posts', posts)
     except PageNotAnInteger:
         # If page is not an integer, deliver first page.
         posts = paginator.page(1)
-        print('posts-new', posts)
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         posts = paginator.page(paginator.num_pages)
-        print('posts-e', posts)
     return posts
-
-
-
 
 
 # def add(request):
@@ -67,7 +63,6 @@ def delete(request):
     if request.method == 'POST':
         print('这里是POST的数据:', request.POST)
         type = request.POST.get('type')
-        print(type)
         if type == 'task':
             new_name = request.POST.get('name')
             # print(new_name,new_task,new_status)
@@ -78,7 +73,7 @@ def delete(request):
         print('ok')
     task_obj = models.Task.objects.all().values()
     posts = pages(request, task_obj)
-    return render(request, 'task_table.html',{'posts': posts})
+    return render(request, 'task_table.html', {'posts': posts})
     # return render(request, 'status.html')
 
 
@@ -105,7 +100,8 @@ def update(request):
         print('ok')
     task_obj = models.Task.objects.all().values()
     posts = pages(request, task_obj)
-    return render(request, 'task_table.html',{'posts': posts})
+    return render(request, 'task_table.html', {'posts': posts})
+
 
 def host_add(request):
     if request.method == 'POST':
@@ -116,7 +112,8 @@ def host_add(request):
         new_disk = request.POST.get('disk')
         new_mem = request.POST.get('mem_total')
         new_time = request.POST.get('time')
-        t = models.Host.objects.create(hostname=new_hostname,ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem)
+        t = models.Host.objects.create(hostname=new_hostname, ip=new_ip, disk=new_disk, time=new_time,
+                                       mem_total=new_mem)
     else:
         print('ok')
     return render(request, 'status.html')
@@ -128,51 +125,119 @@ def update_host(request):
         new_hostname = request.POST.get('hostname')
         new_ip = request.POST.get('ip')
         # new_status = request.POST.get('status')
-        new_disk = request.POST.get('disk')
+        tmp_disk = request.POST.get('disk')
+        t = json.loads(tmp_disk)
+
         new_mem = request.POST.get('mem_total')
         new_cpu_version = request.POST.get('cpu_version')
         new_time = request.POST.get('time')
         new_sn = request.POST.get('sn')
         new_product = request.POST.get('product')
+        new_disk = 100
+        host_sn = models.Host.objects.get(sn=new_sn).sn
 
-        try:
-            models.Host.objects.get(hostname=new_hostname)
-        except ObjectDoesNotExist:
-            print('创建')
-            t = models.Host.objects.create(hostname=new_hostname,ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem,sn=new_sn,product=new_product,cpu_version=new_cpu_version)
-        else:
-            print('更新')
-            t = models.Host.objects.filter(hostname=new_hostname).update(ip=new_ip,disk=new_disk,time=new_time,mem_total=new_mem,sn=new_sn,product=new_product,cpu_version=new_cpu_version)
+        # 更新Disk
+        all = 0
+        used = 0
+        for i in t:
+            capacity = dict(i)['all']
+            all = all + int(capacity)
+            tmp_used = dict(i)['used']
+            used = used + int(tmp_used)
+            new_partition = dict(i)['mount']
+            new_available = dict(i)['space']
+
+            updated_values = {"host_id": host_sn,
+                              "used": used,
+                              "capacity": capacity,
+                              "available": new_available,
+                              "partition": new_partition}
+            print(updated_values)
+            m = models.Disk.objects.update_or_create(defaults=updated_values, host_id=host_sn, partition=new_partition)
+
+        # 更新主机表
+        new_capacity = all
+        new_used = used
+        host_updated_values = {
+            "ip": new_ip, "time": new_time, 'mem_total': new_mem, 'sn': new_sn, 'product': new_product,
+            'cpu_version': new_cpu_version, 'disk': new_capacity}
+        models.Host.objects.update_or_create(defaults=host_updated_values, sn=host_sn)
 
 
     else:
         print('ok')
     host_obj = models.Host.objects.all().values()
     posts = pages(request, host_obj)
-    return render(request, 'host_table.html',{'posts': posts})
+    return render(request, 'host_table.html', {'posts': posts})
+
+
+class Assets:
+    host_obj = models.Host.objects.all().values()
+
+    def host(self):
+        posts = pages(self, host_obj)
+        print(self.POST)
+        if self.method == 'POST':
+            if self.POST.get('type') == 'detail':
+                hostname = self.POST.get('hostname')
+                sn = models.Host.objects.get(hostname=hostname).sn
+                print(sn)
+                used_obj = models.Disk.objects.filter(host_id=sn).values()
+                print(used_obj)
+                n = 0
+                m = 0
+                for i in list(used_obj.values()):
+                    n = n + i['used']
+                    m = m + i['capacity']
+                used = n / m * 100
+                obj_host = models.Host.objects.filter(hostname=hostname)
+                for i in list(obj_host.values()):
+                    print(i)
+                    i['used'] = float('%.2f' % used)
+                    ss = (JsonResponse(i))
+                return HttpResponse(ss)
+            else:
+                return render(self, 'host.html', {'posts': posts, 'host': host_obj})
+        else:
+            return render(self, 'host.html', {'posts': posts, 'host': host_obj})
 
 
 def assets(request):
-    host_obj = models.Host.objects.all().values()
-    posts = pages(request, host_obj)
-    if request.method == 'POST':
-        if request.POST.get('type') == 'detail':
-            hostneme = request.POST.get('hostname')
-            print(hostneme)
-            t = models.Host.objects.filter(hostname=hostneme)
-            print(type(list(t.values())))
-            for i in list(t.values()):
-                t = (JsonResponse(i))
+    Assets.host(request)
+    # host_obj = models.Host.objects.all().values()
+    # posts = pages(request, host_obj)
+    # print(request.POST)
+    # if request.method == 'POST':
+    #     if request.POST.get('type') == 'detail':
+    #         hostname = request.POST.get('hostname')
+    #         sn = models.Host.objects.get(hostname=hostname).sn
+    #         print(sn)
+    #         used_obj = models.Disk.objects.filter(host_id=sn).values()
+    #         print(used_obj)
+    #         n = 0
+    #         m = 0
+    #         for i in list(used_obj.values()):
+    #             n = n + i['used']
+    #             m = m + i['capacity']
+    #         used = n / m * 100
+    #         obj_host = models.Host.objects.filter(hostname=hostname)
+    #         for i in list(obj_host.values()):
+    #             i['used'] = float('%.2f' % used)
+    #             t = (JsonResponse(i))
+    #
+    #         return HttpResponse(t)
+    #     else:
+    #         return render(request, 'host.html', {'posts': posts, 'host': host_obj})
+    # else:
+    #     return render(request, 'host.html', {'posts': posts, 'host': host_obj})
 
-            return HttpResponse(t)
-        else:
-            return render(request, 'host.html',{'posts': posts,'host':host_obj})
-    else:
-        return render(request, 'host.html',{'posts': posts,'host':host_obj})
+
 def tasks(request):
     task_obj = models.Task.objects.all().values()
     posts = pages(request, task_obj)
     return render(request, 'task.html', {'task': task_obj, 'posts': posts})
+
+
 def index(request):
     if request.method == 'POST':
         print('这里是POST的数据:', request.POST)
@@ -184,7 +249,6 @@ def index(request):
         # print(hostname)
         # 写入数据库HostTask
         t_host = models.Host.objects.get(ip=ip).id
-        print(t_host)
         t = models.HostTask.objects.filter(host_id=t_host).update(status=status)
 
         return render(request, 'status.html')

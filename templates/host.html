@@ -56,6 +56,13 @@
                     <hr>
                     <p>
                         <a>
+                            磁盘使用率:
+                        </a>
+                        <a id="used"></a>
+                    </p>
+                    <hr>
+                    <p>
+                        <a>
                             机房:
                         </a>
                         <a id="city">青岛</a>
@@ -102,11 +109,11 @@
                                     </th>
                                     <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
                                         colspan="1"
-                                        aria-label="Engine version: activate to sort column ascending">Memory
+                                        aria-label="Engine version: activate to sort column ascending">Memory / M
                                     </th>
                                     <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
                                         colspan="1"
-                                        aria-label="CSS grade: activate to sort column ascending">Disk
+                                        aria-label="CSS grade: activate to sort column ascending">Disk / G
                                     </th>
                                     <th class="sorting" tabindex="0" aria-controls="example2" rowspan="1"
                                         colspan="1"
@@ -125,6 +132,7 @@
 
                                         <td class="sorting_1" style="display:none">{{ i.id }}</td>
                                         <td id="{{ i.id }}" onclick="Detail(this)">{{ i.hostname }}</td>
+                                        <td style="display: none">{{ i.sn }}</td>
                                         <td>{{ i.ip }}</td>
                                         <td>{{ i.mem_total }}</td>
                                         <td>{{ i.disk }}</td>
@@ -153,7 +161,8 @@
 {% block admin-js %}
     <script>
         function Detail(obj) {
-            var hostname = $(obj).text();
+
+            var hostname = $(obj).text()
             console.log(hostname);
 
             $.ajax({
@@ -165,8 +174,9 @@
                     var obj = eval('(' + data + ')');
                     $('#host').text(obj.hostname);
                     $('#ip').text(obj.ip);
-                    $('#mem').text(obj.mem_total);
-                    $('#disk').text(obj.disk);
+                    $('#mem').text(obj.mem_total + ' M');
+                    $('#disk').text(obj.disk + ' G');
+                    $('#used').text(obj.used + ' %');
                     $('#city').text(obj.city);
                     $('#time').text(obj.time);
                     $('#sn').text(obj.sn);

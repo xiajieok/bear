@@ -22,6 +22,9 @@ class TaskAdmin(admin.ModelAdmin):
     ]
 class HostTaskAdmin(admin.ModelAdmin):
     list_display = ['id','task','host']
+class DiskAdmin(admin.ModelAdmin):
+    list_display = ['id','partition','host','capacity','used','available']
 admin.site.register(models.Host, HostAdmin)
 admin.site.register(models.Task,TaskAdmin)
 admin.site.register(models.HostTask,HostTaskAdmin)
+admin.site.register(models.Disk,DiskAdmin)

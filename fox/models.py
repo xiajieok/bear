@@ -27,8 +27,12 @@ class Host(models.Model):
     time = models.DateTimeField(max_length=50)
     # class Meta:
     #     verbose_name = '主机名'
-
-
+class Disk(models.Model):
+    host = models.ForeignKey(Host,related_name='host_disk')
+    partition = models.CharField(max_length=50)
+    used = models.IntegerField()
+    capacity = models.IntegerField()
+    available = models.IntegerField()
 class Task(models.Model):
     name = models.CharField(primary_key=True,max_length=32, default='Cron')
     task = models.CharField(max_length=32)
