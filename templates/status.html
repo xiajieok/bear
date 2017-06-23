@@ -110,6 +110,9 @@
         {#        <div style="display:inline;width:90px;height:90px;">#}
         <div id="main" style="width: 300px;height:200px;"></div>
         {#        </div>#}
+        <span id="count" style="display: none">{{ avg.1 |floatformat:"2" }}</span>
+        <span id="avg" style="display: none">{{ avg.0|floatformat:"2" }}</span>
+
 
         <div class="knob-label">Disk Space</div>
     </div>
@@ -132,7 +135,9 @@
     <script type="text/javascript">
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('main'));
-
+        var avg = $('#avg').text();
+        var space = 100 - avg
+        console.log(avg)
         // 指定图表的配置项和数据
         var option = {
             tooltip: {
@@ -166,6 +171,8 @@
                 }
             },
             calculable: true,
+
+
             series: [
                 {
                     name: '磁盘使用率',
@@ -193,12 +200,12 @@
                     },
                     data: [
                         {
-                            value: 335, name: '已使用', itemStyle: {
+                            value: avg, name: '已使用', itemStyle: {
                             normal: {color: 'rgb(0,178,238)'}
                         }
                         },
                         {
-                            value: 310, name: '未使用', itemStyle: {
+                            value: space, name: '未使用', itemStyle: {
                             normal: {color: 'rgb(234,234,234)'}
                         }
                         },

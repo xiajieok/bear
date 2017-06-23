@@ -31,8 +31,12 @@ class Disk(models.Model):
     host = models.ForeignKey(Host,related_name='host_disk')
     partition = models.CharField(max_length=50)
     used = models.IntegerField()
+    use = models.IntegerField(default=0)
     capacity = models.IntegerField()
     available = models.IntegerField()
+class Memory(models.Model):
+    host = models.ForeignKey(Host,related_name='host_mem')
+    capacity = models.IntegerField(u'内存大小（MB)')
 class Task(models.Model):
     name = models.CharField(primary_key=True,max_length=32, default='Cron')
     task = models.CharField(max_length=32)

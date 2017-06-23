@@ -144,11 +144,12 @@ def update_host(request):
             all = all + int(capacity)
             tmp_used = dict(i)['used']
             used = used + int(tmp_used)
+            use = dict(i)['used%'][0:-1]
             new_partition = dict(i)['mount']
             new_available = dict(i)['space']
-
             updated_values = {"host_id": host_sn,
                               "used": used,
+                              "use": use,
                               "capacity": capacity,
                               "available": new_available,
                               "partition": new_partition}
@@ -171,15 +172,18 @@ def update_host(request):
     return render(request, 'host_table.html', {'posts': posts})
 
 
-class Assets:
+class Asset(object):
     host_obj = models.Host.objects.all().values()
+    print(host_obj)
 
-    def host(self):
-        posts = pages(self, host_obj)
-        print(self.POST)
-        if self.method == 'POST':
-            if self.POST.get('type') == 'detail':
-                hostname = self.POST.get('hostname')
+    def host(slef):
+        print('self', slef.request)
+        posts = pages(slef.request, host_obj)
+        print('posts', posts)
+        if slef.request.method == 'POST':
+            print('展示主机详情')
+            if slef.request.POST.get('type') == 'detail':
+                hostname = slef.request.POST.get('hostname')
                 sn = models.Host.objects.get(hostname=hostname).sn
                 print(sn)
                 used_obj = models.Disk.objects.filter(host_id=sn).values()
@@ -195,48 +199,64 @@ class Assets:
                     print(i)
                     i['used'] = float('%.2f' % used)
                     ss = (JsonResponse(i))
-                return HttpResponse(ss)
+                return HttpResponse('haha')
             else:
-                return render(self, 'host.html', {'posts': posts, 'host': host_obj})
+                print('展示主机信息')
+                return render(slef.request, 'host.html', {'posts': posts, 'host': host_obj})
         else:
-            return render(self, 'host.html', {'posts': posts, 'host': host_obj})
+            print('GET:展示主机信息')
+            print('GET:展示主机信息', posts)
+            print('GET:展示主机信息', host_obj)
+            return render(slef.request, 'host.html', {'posts': posts, 'host': host_obj})
 
 
 def assets(request):
-    Assets.host(request)
-    # host_obj = models.Host.objects.all().values()
-    # posts = pages(request, host_obj)
-    # print(request.POST)
-    # if request.method == 'POST':
-    #     if request.POST.get('type') == 'detail':
-    #         hostname = request.POST.get('hostname')
-    #         sn = models.Host.objects.get(hostname=hostname).sn
-    #         print(sn)
-    #         used_obj = models.Disk.objects.filter(host_id=sn).values()
-    #         print(used_obj)
-    #         n = 0
-    #         m = 0
-    #         for i in list(used_obj.values()):
-    #             n = n + i['used']
-    #             m = m + i['capacity']
-    #         used = n / m * 100
-    #         obj_host = models.Host.objects.filter(hostname=hostname)
-    #         for i in list(obj_host.values()):
-    #             i['used'] = float('%.2f' % used)
-    #             t = (JsonResponse(i))
-    #
-    #         return HttpResponse(t)
-    #     else:
-    #         return render(request, 'host.html', {'posts': posts, 'host': host_obj})
-    # else:
-    #     return render(request, 'host.html', {'posts': posts, 'host': host_obj})
+    # Asset.host(request)
+    host_obj = models.Host.objects.all().values()
+    posts = pages(request, host_obj)
+    if request.method == 'POST':
+        if request.POST.get('type') == 'detail':
+            hostname = request.POST.get('hostname')
+            sn = models.Host.objects.get(hostname=hostname).sn
+            used_obj = models.Disk.objects.filter(host_id=sn).values()
+            n = 0
+            m = 0
+            for i in list(used_obj.values()):
+                n = n + i['used']
+                m = m + i['capacity']
+            used = n / m * 100
+            obj_host = models.Host.objects.filter(hostname=hostname)
+            for i in list(obj_host.values()):
+                i['used'] = float('%.2f' % used)
+                t = (JsonResponse(i))
+            return HttpResponse(t)
+        else:
+            return render(request, 'host.html', {'posts': posts, 'host': host_obj})
+    else:
+        return render(request, 'host.html', {'posts': posts, 'host': host_obj})
 
 
 def tasks(request):
     task_obj = models.Task.objects.all().values()
     posts = pages(request, task_obj)
+
     return render(request, 'task.html', {'task': task_obj, 'posts': posts})
 
+
+def cc(request):
+    t = models.Disk.objects.values('use').all()
+    count = 0
+    # print(type(t))
+    for i in t:
+        print(type(i))
+        for j in i.values():
+            print(j)
+        count +=  j
+    avg = count / len(t)
+    l = []
+    l.append(avg)
+    l.append(count)
+    return l
 
 def index(request):
     if request.method == 'POST':
@@ -253,17 +273,12 @@ def index(request):
 
         return render(request, 'status.html')
     else:
-        #
-        # print(task_count)
-        i = 1
-        # while i < task_count:
-        #     # print(i)
-        #     # update_status(i)
-        #     i += i
+        avg = cc(request)
+        print(avg)
         task_obj = models.Task.objects.all().values()
         host_obj = models.Host.objects.all().values()
         posts = pages(request, task_obj)
-        return render(request, 'status.html', {'task': task_obj, 'host': host_obj, 'posts': posts})
+        return render(request, 'status.html', {'task': task_obj, 'host': host_obj, 'posts': posts,'avg':avg})
 
 # def getdata():
 #     stat_obj = models.Host
