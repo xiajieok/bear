@@ -45,11 +45,11 @@
             </ul>
         </li>
         <li class="treeview">
-            <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <i
+            <a href="#"><i class="fa fa-navicon"></i> <span>部署管理</span> <i
                     class="fa fa-angle-left pull-right"></i></a>
             <ul class="treeview-menu">
-                <li><a href="#">Link in level 2</a></li>
-                <li><a href="#">Link in level 2</a></li>
+                <li><<a href="{% url 'fox.views.cmd' %}"><i class="fa  fa-code"></i> 命令执行</a></li>
+                <li><a href="#"><i class="fa  fa-bug"></i> 日志统计</a></li>
             </ul>
         </li>
     </ul>
@@ -68,6 +68,10 @@
 {#        </li>#}
 {#    </ul>#}
 {% endblock %}
+{% block admin-content %}
+    This is body
+{% endblock %}
+
 {% block admin-js %}
     <script>
     $(document).ready(function(){

@@ -5,6 +5,7 @@ from django.db import models
 
 # Create your models here.
 
+
 class Host(models.Model):
     '''
     主机名、ip、系统版本、内存、硬盘、制造商、cpu、厂商、生产商,SN
@@ -25,6 +26,8 @@ class Host(models.Model):
     # Manufacturer = models.CharField(max_length=50)
     sn = models.CharField(max_length=40,primary_key=True)
     time = models.DateTimeField(max_length=50)
+    idc = models.ForeignKey('IDC',null=True, blank=True)
+
     # class Meta:
     #     verbose_name = '主机名'
 class Disk(models.Model):
@@ -45,3 +48,13 @@ class HostTask(models.Model):
     host = models.ForeignKey(Host,related_name='host_task')
     task = models.ForeignKey(Task,default='1')
     status = models.FloatField(Task,default='100')
+class IDC(models.Model):
+    name = models.CharField(max_length=20, verbose_name=u'机房名称',unique=True)
+    type = models.CharField(max_length=20, verbose_name=u'机房类型',blank=True,null=True)
+    location = models.CharField(max_length=30, verbose_name=u'机房位置',blank=True,null=True)
+    memo = models.TextField(max_length=50, blank=True, verbose_name=u'备注',null=True)
+    def __str__(self):
+        return self.name
+    class Meta:
+        verbose_name = '机房'
+        verbose_name_plural = "机房"

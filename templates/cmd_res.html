@@ -1,0 +1,8 @@
+<div>
+    {#    {{ cmd }}#}
+    {% for i in cmd.items %}
+        {% for j in i %}
+            <pre>{{ j }}</pre>
+        {% endfor %}
+    {% endfor %}
+</div>

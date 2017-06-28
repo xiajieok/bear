@@ -26,5 +26,6 @@ urlpatterns = [
     # url(r'^inquery/$', fox.inquery),
     url(r'^update/$', fox.update),
     url(r'^update_host/$', fox.update_host),
+    url(r'^cmd/$', fox.cmd),
 
 ]

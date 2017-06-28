@@ -12,7 +12,7 @@ from django.db.models import Count
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-
+from fox.SaltApi import SaltAPI
 host_obj = models.Host.objects.all().values()
 
 
@@ -279,6 +279,25 @@ def index(request):
         host_obj = models.Host.objects.all().values()
         posts = pages(request, task_obj)
         return render(request, 'status.html', {'task': task_obj, 'host': host_obj, 'posts': posts,'avg':avg})
+
+def cmd(request):
+    if request.method == 'POST':
+        print(request.method)
+        salt = SaltAPI(url='https://192.168.1.30:8000', username='saltapi', password='salt')
+        # params = {'client':'wheel', 'fun':'key.list_all', 'tgt':'*'}
+        # params = {'client':'local', 'fun':'cmd.run', 'tgt':'*','arg':'free -m'}
+        arg = request.POST.get('cmd')
+        tgt = 'Dev-BJ-JRS-192.168.1.31'
+        res = salt.cmd(tgt,arg)['return'][0]
+        print(res)
+        return  render(request,'cmd_res.html',{'cmd':res})
+    else:
+        print('Hello Get !!!')
+        host_obj = ['Dev-BJ-JRS-192.168.1.31','Dev-BJ-XJ-192.168.1.40']
+
+        return render(request,'cmd.html',{'host':host_obj})
+
+
 
 # def getdata():
 #     stat_obj = models.Host
